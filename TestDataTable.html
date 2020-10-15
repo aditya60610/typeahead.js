@@ -1,0 +1,131 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/media/js/jquery.js"></script>
+    <script src="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
+    <script src="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/extras/Scroller/js/dataTables.scroller.js"></script>
+
+    <link rel="stylesheet" href="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/media/css/jquery.dataTables.css" />
+    <link rel="stylesheet" href="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/extras/Scroller/css/dataTables.scroller.css" />
+    <script>
+        $(document).ready(function () {
+            var result = [];
+            var partyID = '"1000003901,1000010161,1000018831,1000561814,1000625686,1000932998,1005739544"'; //'1000003901,1000010161,1000018831,1000561814,1000625686,1000932998,1005739544';
+            $.ajax({
+
+                url: "https://portalplusmvpapp.azurewebsites.net/api/GetAssetTypeData",
+
+                method: 'POST',
+
+                data: partyID,
+
+                beforeSend: function (req) { req.setRequestHeader('Ocp-Apim-Subscription-Key', 'c898ce10686d40f499f6d32062308bed'); },
+
+                contentType: "application/json",
+
+                success: OnSuccess,
+  
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                    console.log(textStatus);
+                }
+
+            });
+            function OnSuccess(response) {
+                $('#example').DataTable({
+                    serverSide: true,
+                    deferRender: true,
+                    processing: true,
+                    //language: {
+                    //    loadingRecords: '&nbsp;',
+                    //    processing: '<div class="spinner"></div>'
+                    //},
+                    ordering: false,
+                    searching: true,
+                   // "aaSorting": [[0, "asc"]],
+                    ajax: function (data, callback, settings) {
+                        var out = [];
+                        var outResult = [];
+                        console.log(data);
+                        //alert(response.length);
+                        // for (var i = data.start, ien = data.start + data.length; i < ien; i++) {
+                        for (var i = data.start;i < response.length; i++) {
+                          //   out.push([i + '-1', i + '-2', i + '-3', i + '-4', i + '-5']);
+                            outResult.push(response[i]);
+                        }
+
+                      //  console.log(outResult);
+
+                        setTimeout(function () {
+                            //console.log(out);
+                            callback({
+                                draw: data.draw,
+                                data: outResult,
+                                recordsTotal: response.length,
+                                recordsFiltered: response.length
+                            });
+                        }, 500);
+                    },
+                    columns: [
+                        { 'data': 'ProductTypeCode', "orderable": true },
+                        { 'data': 'AgreementType', "orderable": false },
+                        { 'data': 'Count', "orderable": true }
+                    ],
+                    dom: "rtiS",
+                    scrollY: 200,
+                    scroller: {
+                        loadingIndicator: true
+                    }
+                });
+            }
+        });
+    </script>
+    <style>
+        @keyframes spinner {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner:before {
+            content: '';
+            box-sizing: border-box;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            animation: spinner .6s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <table id="example" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ProductTypeCode</th>
+                <th>AgreementType</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+    </table>
+    <!--<table id="example" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>ZIP / Post code</th>
+                <th>Country</th>
+            </tr>
+        </thead>
+    </table>-->
+</body>
+</html>
