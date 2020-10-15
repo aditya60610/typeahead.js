@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/media/js/jquery.js"></script>
+    <script src="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
+    <script src="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/extras/Scroller/js/dataTables.scroller.js"></script>
+
+    <link rel="stylesheet" href="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/media/css/jquery.dataTables.css" />
+    <link rel="stylesheet" href="http://www.reign-co.com/assets/backend/vendor/jquery-datatables/extras/Scroller/css/dataTables.scroller.css" />
+    <script>
+        $(document).ready(function () {
+            var result = [];
+            var partyID = '"1000003901,1000010161,1000018831,1000561814,1000625686,1000932998,1005739544"'; //'1000003901,1000010161,1000018831,1000561814,1000625686,1000932998,1005739544';
+
+
+                $('#example').DataTable({
+                    serverSide: true,
+                   // deferRender: true,
+                    processing: true,
+                    info: true,   // control table information display field
+                    stateSave: true,  //restore table state on page reload,
+                    //language: {
+                    //    loadingRecords: '&nbsp;',
+                    //    processing: '<div class="spinner"></div>'
+                    //},
+                    ordering: true,
+                   // searching: true,
+                    // "aaSorting": [[0, "asc"]],
+                    lengthMenu: [[10, 20, 50, -1], [10, 20, 50, "All"]],
+                    ajax: function (data, callback, settings) {
+                        var out = [];
+                        var outResult = "";
+                        //console.log(data);
+                        ////alert(response.length);
+                        //// for (var i = data.start, ien = data.start + data.length; i < ien; i++) {
+                        //for (var i = data.start; i < response.length; i++) {
+                        //    //   out.push([i + '-1', i + '-2', i + '-3', i + '-4', i + '-5']);
+                        //    outResult.push(response[i]);
+                        //}
+                        $.ajax({
+                            url: "http://localhost:50465//Home/AjaxGetJsonData",
+                            type: "GET",
+                            data: data,
+                            success: function (result) {
+                                outResult=result;
+                               // console.log(outResult);
+                                console.log(result);
+                                console.log(result.recordsTotal);
+
+                                setTimeout(function () {
+                                    //   console.log(data);
+                                    // console.log("recordsTotal" + data.recordsTotal);
+                                    callback({
+                                        draw: result.draw,
+                                        data: result.data,
+                                        recordsTotal: result.recordsTotal,
+                                        recordsFiltered: result.recordsFiltered
+                                    });
+                                }, 50);
+                            },
+                            error: function (xhr, textStatus, errorThrown) { alert(textStatus + ':' + errorThrown); }
+                        });
+
+                       // console.log("Result is" + outResult);
+
+                        //setTimeout(function () {
+                        // //   console.log(data);
+                        //   // console.log("recordsTotal" + data.recordsTotal);
+                        //    callback({
+                        //        draw: data.draw,
+                        //        data: data.data,
+                        //        recordsTotal: data.recordsTotal,
+                        //        recordsFiltered: data.recordsFiltered
+                        //    });
+                        //}, 50);
+                    },
+                    columns: [
+                        { "data": "Name", "orderable": true },
+                        { "data": "Age", "orderable": false },
+                        { "data": "DoB", "orderable": true }
+                    ],
+                    dom: "frtiS",
+                    scrollY: 200,
+                    scroller: {
+                        loadingIndicator: true
+                    }
+                });
+        });
+    </script>
+</head>
+<body>
+    <!--<div style="margin:30px;">
+
+        <table id="example" class="display" cellspacing="0" width="100%">
+            <thead>
+                <tr style="text-align:left;">
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>DoB</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr style="text-align:left;">
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>DoB</th>
+                </tr>
+            </tfoot>
+        </table>
+
+    </div>-->
+    <table id="example" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Age</th>
+                <th>DoB</th>
+            </tr>
+        </thead>
+    </table>
+</body>
+</html>
